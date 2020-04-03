@@ -10,7 +10,7 @@ import {
 const ChallengeCard = props => {
 	let { url } = useRouteMatch();
 	return (
-		<div className="col-sm-4">
+		<div className="col-sm-4" style={{ marginBottom: "2em" }}>
 			<div className="card">
 				<div className="card-body">
 					<h5 className="card-title">{props.challenge.name}</h5>
@@ -39,7 +39,13 @@ class Course extends Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 
-		this.state = { course: null, challenges: [], done: false, name: "" };
+		this.state = {
+			course: null,
+			challenges: [],
+			done: false,
+			name: "",
+			user: this.props.user
+		};
 	}
 
 	componentDidMount() {
@@ -117,6 +123,43 @@ class Course extends Component {
 	}
 
 	render() {
+		const form = (
+			<div id="form">
+				<button
+					type="button"
+					className="btn btn-success"
+					id="challengeCreateButton"
+					onClick={this.challengeCreate}
+				>
+					Create New Challenge
+				</button>
+				<form
+					onSubmit={this.handleSubmit}
+					id="challengeCreateForm"
+					style={{ display: "none" }}
+				>
+					<div className="form-group">
+						<label htmlFor="name" className="col-form-label">
+							Challenge Name:
+						</label>
+						<input
+							type="text"
+							className="form-control"
+							id="name"
+							name="name"
+							value={this.state.name}
+							onChange={this.handleChange}
+						/>
+					</div>
+					<button type="submit" className="btn btn-primary">
+						Create
+					</button>
+				</form>
+				<br />
+				<br />
+			</div>
+		);
+
 		if (!this.state.done) {
 			return <p>Loading Course and challenges...</p>;
 		} else {
@@ -137,46 +180,9 @@ class Course extends Component {
 								component={PlaceholderChallenge}
 							/>
 							<Route exact path={url}>
-								<div id="form">
-									<button
-										type="button"
-										className="btn btn-success"
-										id="challengeCreateButton"
-										onClick={this.challengeCreate}
-									>
-										Create New Challenge
-									</button>
-									<form
-										onSubmit={this.handleSubmit}
-										id="challengeCreateForm"
-										style={{ display: "none" }}
-									>
-										<div className="form-group">
-											<label
-												htmlFor="name"
-												className="col-form-label"
-											>
-												Challenge Name:
-											</label>
-											<input
-												type="text"
-												className="form-control"
-												id="name"
-												name="name"
-												value={this.state.name}
-												onChange={this.handleChange}
-											/>
-										</div>
-										<button
-											type="submit"
-											className="btn btn-primary"
-										>
-											Create
-										</button>
-									</form>
-									<br />
-									<br />
-								</div>
+								{this.state.user.category === "prof"
+									? form
+									: ""}
 								<div className="row">{result}</div>
 							</Route>
 						</Switch>

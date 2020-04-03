@@ -4,7 +4,7 @@ import Course from "./Course";
 
 const CourseCard = props => {
 	return (
-		<div className="col-sm-4">
+		<div className="col-sm-4" style={{ marginBottom: "2em" }}>
 			<div className="card">
 				<div className="card-body">
 					<h5 className="card-title">{props.course.name}</h5>
@@ -39,15 +39,33 @@ class CourseList extends Component {
 	}
 
 	componentDidMount() {
-		const url = `http://localhost:1916/course?profId=${this.state.user._id}`;
-		fetch(url)
-			.then(result => result.json())
-			.then(result => {
-				this.setState({
-					courses: result.message,
-					done: true
+		if (this.state.user.category === "prof") {
+			const url = `http://localhost:1916/course?profId=${this.state.user._id}`;
+			fetch(url)
+				.then(result => result.json())
+				.then(result => {
+					this.setState({
+						courses: result.message,
+						done: true
+					});
 				});
-			});
+		}
+		if (this.state.user.category === "student") {
+			const url = "http://localhost:1916/course";
+			let courses = { courseList: this.state.user.enrolledIn };
+			fetch(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(courses)
+			})
+				.then(result => result.json())
+				.then(result => {
+					let courses = result.message;
+					this.setState({ courses, done: true });
+				});
+		}
 	}
 
 	handleChange(event) {
@@ -63,30 +81,72 @@ class CourseList extends Component {
 	handleSubmit(event) {
 		event.preventDefault();
 
-		console.log("submit triggered");
 		let currentCourses = this.state.courses;
-		const url = "http://localhost:1916/course/create";
-		const course = {
-			profId: this.state.user._id,
-			description: this.state.description,
-			code: this.state.code,
-			name: this.state.name
-		};
-		console.log(course);
-		fetch(url, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(course)
-		})
-			.then(result => result.json())
-			.then(result => {
-				console.log(result);
-				let newCourse = result.message;
-				currentCourses.push(newCourse);
-				this.setState({ courses: currentCourses });
-			});
+		if (this.state.user.category === "prof") {
+			const url = "http://localhost:1916/course/create";
+			const course = {
+				profId: this.state.user._id,
+				description: this.state.description,
+				code: this.state.code,
+				name: this.state.name
+			};
+			console.log(course);
+			fetch(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(course)
+			})
+				.then(result => result.json())
+				.then(result => {
+					console.log(result);
+					let newCourse = result.message;
+					currentCourses.push(newCourse);
+					this.setState({ courses: currentCourses });
+				});
+		}
+		if (this.state.user.category === "student") {
+			let course = {
+				name: this.state.name,
+				code: this.state.code
+			};
+			const validateUrl = "http://localhost:1916/course/validate";
+			let finalUser;
+			fetch(validateUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(course)
+			})
+				.then(result => result.json())
+				.then(result => {
+					if (!result.message.length) {
+						alert("Please try again! Course NOT found");
+					} else {
+						course = result.message[0];
+						currentCourses.push(course);
+						let updatedUser = this.state.user;
+						updatedUser.enrolledIn.push(course._id);
+						finalUser = updatedUser;
+						const updateUrl = "http://localhost:1916/user/update";
+						fetch(updateUrl, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify(updatedUser)
+						})
+							.then(result => result.json())
+							.then(result => {
+								this.props.handleUser(finalUser);
+								this.setState({ user: finalUser });
+								this.setState({ courses: currentCourses });
+							});
+					}
+				});
+		}
 
 		this.courseCreate();
 	}
@@ -94,17 +154,132 @@ class CourseList extends Component {
 	courseCreate() {
 		const form = document.getElementById("courseCreateForm");
 		const button = document.getElementById("courseCreateButton");
-
 		if (form.style["display"] === "none") {
 			form.style["display"] = "block";
 			button.textContent = "Close Form";
 		} else {
 			form.style["display"] = "none";
-			button.textContent = "Create New Course";
+			button.textContent = "Add new course";
 		}
 	}
 
 	render() {
+		const profForm = (
+			<div id="form">
+				<br />
+				<br />
+				<button
+					type="button"
+					className="btn btn-success"
+					id="courseCreateButton"
+					onClick={this.courseCreate}
+				>
+					Add new course
+				</button>
+				<form
+					onSubmit={this.handleSubmit}
+					id="courseCreateForm"
+					style={{ display: "none" }}
+				>
+					<div className="form-group">
+						<label htmlFor="name" className="col-form-label">
+							Course Name:
+						</label>
+						<input
+							type="text"
+							className="form-control"
+							id="name"
+							name="name"
+							value={this.state.name}
+							onChange={this.handleChange}
+						/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="description" className="col-form-label">
+							Course Description:
+						</label>
+						<input
+							type="text"
+							className="form-control"
+							id="description"
+							name="description"
+							value={this.state.description}
+							onChange={this.handleChange}
+						/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="code" className="col-form-label">
+							Course Code:
+						</label>
+						<input
+							type="text"
+							className="form-control"
+							id="code"
+							name="code"
+							value={this.state.code}
+							onChange={this.handleChange}
+						/>
+					</div>
+					<button type="submit" className="btn btn-primary">
+						Go
+					</button>
+				</form>
+				<br />
+				<br />
+			</div>
+		);
+
+		const studForm = (
+			<div id="form">
+				<br />
+				<br />
+				<button
+					type="button"
+					className="btn btn-success"
+					id="courseCreateButton"
+					onClick={this.courseCreate}
+				>
+					Add new course
+				</button>
+				<form
+					onSubmit={this.handleSubmit}
+					id="courseCreateForm"
+					style={{ display: "none" }}
+				>
+					<div className="form-group">
+						<label htmlFor="name" className="col-form-label">
+							Course Name:
+						</label>
+						<input
+							type="text"
+							className="form-control"
+							id="name"
+							name="name"
+							value={this.state.name}
+							onChange={this.handleChange}
+						/>
+					</div>
+					<div className="form-group">
+						<label htmlFor="code" className="col-form-label">
+							Course Code:
+						</label>
+						<input
+							type="text"
+							className="form-control"
+							id="code"
+							name="code"
+							value={this.state.code}
+							onChange={this.handleChange}
+						/>
+					</div>
+					<button type="submit" className="btn btn-primary">
+						Go
+					</button>
+				</form>
+				<br />
+				<br />
+			</div>
+		);
 		if (!this.state.done) {
 			return <h5>Loading...</h5>;
 		} else {
@@ -117,86 +292,15 @@ class CourseList extends Component {
 						<Switch>
 							<Route
 								path="/course/:courseId"
-								component={Course}
+								render={props => (
+									<Course {...props} user={this.state.user} />
+								)}
 							/>
 							<Route exact path="/">
 								<div>
-									<div id="form">
-										<br />
-										<br />
-										<button
-											type="button"
-											className="btn btn-success"
-											id="courseCreateButton"
-											onClick={this.courseCreate}
-										>
-											Create New Course
-										</button>
-										<form
-											onSubmit={this.handleSubmit}
-											id="courseCreateForm"
-											style={{ display: "none" }}
-										>
-											<div className="form-group">
-												<label
-													htmlFor="name"
-													className="col-form-label"
-												>
-													Course Name:
-												</label>
-												<input
-													type="text"
-													className="form-control"
-													id="name"
-													name="name"
-													value={this.state.name}
-													onChange={this.handleChange}
-												/>
-											</div>
-											<div className="form-group">
-												<label
-													htmlFor="description"
-													className="col-form-label"
-												>
-													Course Description:
-												</label>
-												<input
-													type="text"
-													className="form-control"
-													id="description"
-													name="description"
-													value={
-														this.state.description
-													}
-													onChange={this.handleChange}
-												/>
-											</div>
-											<div className="form-group">
-												<label
-													htmlFor="code"
-													className="col-form-label"
-												>
-													Course Code:
-												</label>
-												<input
-													type="text"
-													className="form-control"
-													id="code"
-													name="code"
-													value={this.state.code}
-													onChange={this.handleChange}
-												/>
-											</div>
-											<button
-												type="submit"
-												className="btn btn-primary"
-											>
-												Create
-											</button>
-										</form>
-										<br />
-										<br />
-									</div>
+									{this.state.user.category === "prof"
+										? profForm
+										: studForm}
 									<div className="row">{result}</div>
 								</div>
 							</Route>
@@ -204,7 +308,12 @@ class CourseList extends Component {
 					</div>
 				);
 			} else {
-				return <h5>No courses to show. Create some new courses.</h5>;
+				if (this.state.user.category === "prof")
+					return (
+						<h5>No courses to show. Create some new courses.</h5>
+					);
+				if (this.state.user.category === "student")
+					return <h5>No courses found. Add some courses</h5>;
 			}
 		}
 	}
