@@ -6,7 +6,9 @@ import {
 	withRouter,
 	useRouteMatch,
 } from "react-router-dom";
+import { useStoreState } from "easy-peasy";
 
+// Used to render the card for challenges
 const ChallengeCard = (props) => {
 	let { url } = useRouteMatch();
 	return (
@@ -44,13 +46,14 @@ class Course extends Component {
 			challenges: [],
 			done: false,
 			name: "",
-			user: this.props.user,
+			user: useStoreState((state) => state.userModel.user),
 		};
 	}
 
 	componentDidMount() {
 		const courseId = this.props.match.params.courseId;
 		const urlForCourse = `http://localhost:1916/course?courseId=${courseId}`;
+		// fetching the course from its id as we dont get that as prop due to router
 		fetch(urlForCourse)
 			.then((result) => result.json())
 			.then((result) => {
@@ -58,6 +61,7 @@ class Course extends Component {
 					course: result.message[0],
 				});
 			})
+			// We fetch all challenges for that courseId
 			.then((urlForChallenge) => {
 				fetch(`http://localhost:1916/challenge?courseId=${courseId}`)
 					.then((result) => result.json())
@@ -123,6 +127,7 @@ class Course extends Component {
 	}
 
 	render() {
+		// Form to create a challenge. Only visible to prof
 		const form = (
 			<div id="form">
 				<button

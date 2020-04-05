@@ -6,6 +6,7 @@ import {
 	withRouter,
 	useRouteMatch,
 } from "react-router-dom";
+import { useStoreState, useStoreActions } from "easy-peasy";
 import Course from "./Course";
 
 const CourseCard = (props) => {
@@ -33,7 +34,7 @@ class CourseList extends Component {
 		super(props);
 
 		this.state = {
-			user: props.user,
+			user: useStoreState((state) => state.userModel.user),
 			courses: [],
 			done: false,
 			name: "",
@@ -46,6 +47,7 @@ class CourseList extends Component {
 	}
 
 	componentDidMount() {
+		// We get courses by profId as courses have profId attr
 		if (this.state.user.category === "prof") {
 			const url = `http://localhost:1916/course?profId=${this.state.user._id}`;
 			fetch(url)
@@ -57,6 +59,7 @@ class CourseList extends Component {
 					});
 				});
 		}
+		// Every student has an enrolledIn array attr and we get courses from that
 		if (this.state.user.category === "student") {
 			const url = "http://localhost:1916/course";
 			let courses = { courseList: this.state.user.enrolledIn };
@@ -89,6 +92,7 @@ class CourseList extends Component {
 		event.preventDefault();
 
 		let currentCourses = this.state.courses;
+		// For prof its just making a new course
 		if (this.state.user.category === "prof") {
 			const url = "http://localhost:1916/course/create";
 			const course = {
@@ -113,6 +117,7 @@ class CourseList extends Component {
 					this.setState({ courses: currentCourses });
 				});
 		}
+		// adding a course for a student occurs in two steps
 		if (this.state.user.category === "student") {
 			let course = {
 				name: this.state.name,
@@ -120,6 +125,7 @@ class CourseList extends Component {
 			};
 			const validateUrl = "http://localhost:1916/course/validate";
 			let finalUser;
+			// We first validate if the details entered are correct or not
 			fetch(validateUrl, {
 				method: "POST",
 				headers: {
@@ -132,12 +138,14 @@ class CourseList extends Component {
 					if (!result.message.length) {
 						alert("Please try again! Course NOT found");
 					} else {
+						// If they are, we then add that course to the enrolledIn of that student and then to the state.
 						course = result.message[0];
 						currentCourses.push(course);
 						let updatedUser = this.state.user;
 						updatedUser.enrolledIn.push(course._id);
 						finalUser = updatedUser;
 						const updateUrl = "http://localhost:1916/user/update";
+						// Updating the enrolledIn
 						fetch(updateUrl, {
 							method: "POST",
 							headers: {
@@ -147,9 +155,11 @@ class CourseList extends Component {
 						})
 							.then((result) => result.json())
 							.then((result) => {
-								this.props.handleUser(finalUser);
+								// Updating the state with the current user and courses.
+								useStoreActions(
+									(action) => action.userModel.update
+								)(finalUser);
 								this.setState({
-									user: finalUser,
 									courses: currentCourses,
 								});
 							});
@@ -290,7 +300,7 @@ class CourseList extends Component {
 			</div>
 		);
 		if (!this.state.done) {
-			return <h5>Loading kg...</h5>;
+			return <h5>Loading...</h5>;
 		} else {
 			if (this.state.courses.length) {
 				let { url } = this.props.match;
@@ -302,9 +312,7 @@ class CourseList extends Component {
 						<Switch>
 							<Route
 								path={`${url}/courses/:courseId`}
-								render={(props) => (
-									<Course {...props} user={this.state.user} />
-								)}
+								render={(props) => <Course {...props} />}
 							/>
 							<Route path="/courses">
 								<div>
