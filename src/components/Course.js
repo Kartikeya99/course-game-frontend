@@ -4,10 +4,10 @@ import {
 	Switch,
 	Route,
 	withRouter,
-	useRouteMatch
+	useRouteMatch,
 } from "react-router-dom";
 
-const ChallengeCard = props => {
+const ChallengeCard = (props) => {
 	let { url } = useRouteMatch();
 	return (
 		<div className="col-sm-4" style={{ marginBottom: "2em" }}>
@@ -27,7 +27,7 @@ const ChallengeCard = props => {
 };
 
 // TODO:
-const PlaceholderChallenge = props => {
+const PlaceholderChallenge = (props) => {
 	let challengeId = props.match.params.challengeId;
 	return <p>{challengeId}</p>;
 };
@@ -44,7 +44,7 @@ class Course extends Component {
 			challenges: [],
 			done: false,
 			name: "",
-			user: this.props.user
+			user: this.props.user,
 		};
 	}
 
@@ -52,19 +52,19 @@ class Course extends Component {
 		const courseId = this.props.match.params.courseId;
 		const urlForCourse = `http://localhost:1916/course?courseId=${courseId}`;
 		fetch(urlForCourse)
-			.then(result => result.json())
-			.then(result => {
+			.then((result) => result.json())
+			.then((result) => {
 				this.setState({
-					course: result.message[0]
+					course: result.message[0],
 				});
 			})
-			.then(urlForChallenge => {
+			.then((urlForChallenge) => {
 				fetch(`http://localhost:1916/challenge?courseId=${courseId}`)
-					.then(result => result.json())
-					.then(result => {
+					.then((result) => result.json())
+					.then((result) => {
 						this.setState({
 							challenges: result.message,
-							done: true
+							done: true,
 						});
 					});
 			});
@@ -76,7 +76,7 @@ class Course extends Component {
 		const name = target.name;
 
 		this.setState({
-			[name]: value
+			[name]: value,
 		});
 	}
 
@@ -88,18 +88,18 @@ class Course extends Component {
 		const url = "http://localhost:1916/challenge/create";
 		const challenge = {
 			courseId: this.state.course._id,
-			name: this.state.name
+			name: this.state.name,
 		};
 		console.log(challenge);
 		fetch(url, {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/json"
+				"Content-Type": "application/json",
 			},
-			body: JSON.stringify(challenge)
+			body: JSON.stringify(challenge),
 		})
-			.then(result => result.json())
-			.then(result => {
+			.then((result) => result.json())
+			.then((result) => {
 				console.log(result);
 				let newChallenge = result.message;
 				currentChallenges.push(newChallenge);

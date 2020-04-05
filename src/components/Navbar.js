@@ -21,13 +21,14 @@ const Navbar = () => {
 			<div className="collapse navbar-collapse" id="navbarNavDropdown">
 				<ul className="navbar-nav nav mr-auto">
 					<li className="nav-item">
-						<NavLink className="nav-link" to="/">
+						<NavLink className="nav-link" to="/courses">
 							Courses
 						</NavLink>
 					</li>
 				</ul>
 				<ul className="navbar-nav nav">
 					<li className="nav-item dropdown">
+						{/* eslint-disable-next-line*/}
 						<a
 							className="nav-link dropdown-toggle"
 							href="#"

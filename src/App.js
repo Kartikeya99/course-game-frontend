@@ -39,11 +39,11 @@ class App extends Component {
 				password: "stud",
 				attemptedChallenges: [
 					{
-						_id: "5e8744848ba7633da6e9f783"
-					}
+						_id: "5e8744848ba7633da6e9f783",
+					},
 				],
-				__v: 0
-			}
+				__v: 0,
+			},
 		};
 	}
 
@@ -59,7 +59,7 @@ class App extends Component {
 				<Router>
 					<Navbar />
 					<Switch>
-						<Route path="/">
+						<Route path="/courses">
 							<CourseList
 								user={this.state.user}
 								handleUser={this.handleUser}

@@ -1,8 +1,15 @@
 import React, { Component } from "react";
-import { Link, Switch, Route } from "react-router-dom";
+import {
+	Link,
+	Switch,
+	Route,
+	withRouter,
+	useRouteMatch,
+} from "react-router-dom";
 import Course from "./Course";
 
-const CourseCard = props => {
+const CourseCard = (props) => {
+	let { url } = useRouteMatch();
 	return (
 		<div className="col-sm-4" style={{ marginBottom: "2em" }}>
 			<div className="card">
@@ -10,7 +17,7 @@ const CourseCard = props => {
 					<h5 className="card-title">{props.course.name}</h5>
 					<p className="card-text">{props.course.description}</p>
 					<Link
-						to={`/course/${props.course._id}`}
+						to={`${url}/courses/${props.course._id}`}
 						className="btn btn-primary"
 					>
 						Go to Course
@@ -31,7 +38,7 @@ class CourseList extends Component {
 			done: false,
 			name: "",
 			code: "",
-			description: ""
+			description: "",
 		};
 
 		this.handleChange = this.handleChange.bind(this);
@@ -42,11 +49,11 @@ class CourseList extends Component {
 		if (this.state.user.category === "prof") {
 			const url = `http://localhost:1916/course?profId=${this.state.user._id}`;
 			fetch(url)
-				.then(result => result.json())
-				.then(result => {
+				.then((result) => result.json())
+				.then((result) => {
 					this.setState({
 						courses: result.message,
-						done: true
+						done: true,
 					});
 				});
 		}
@@ -56,12 +63,12 @@ class CourseList extends Component {
 			fetch(url, {
 				method: "POST",
 				headers: {
-					"Content-Type": "application/json"
+					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(courses)
+				body: JSON.stringify(courses),
 			})
-				.then(result => result.json())
-				.then(result => {
+				.then((result) => result.json())
+				.then((result) => {
 					let courses = result.message;
 					this.setState({ courses, done: true });
 				});
@@ -74,7 +81,7 @@ class CourseList extends Component {
 		const name = target.name;
 
 		this.setState({
-			[name]: value
+			[name]: value,
 		});
 	}
 
@@ -88,18 +95,18 @@ class CourseList extends Component {
 				profId: this.state.user._id,
 				description: this.state.description,
 				code: this.state.code,
-				name: this.state.name
+				name: this.state.name,
 			};
 			console.log(course);
 			fetch(url, {
 				method: "POST",
 				headers: {
-					"Content-Type": "application/json"
+					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(course)
+				body: JSON.stringify(course),
 			})
-				.then(result => result.json())
-				.then(result => {
+				.then((result) => result.json())
+				.then((result) => {
 					console.log(result);
 					let newCourse = result.message;
 					currentCourses.push(newCourse);
@@ -109,19 +116,19 @@ class CourseList extends Component {
 		if (this.state.user.category === "student") {
 			let course = {
 				name: this.state.name,
-				code: this.state.code
+				code: this.state.code,
 			};
 			const validateUrl = "http://localhost:1916/course/validate";
 			let finalUser;
 			fetch(validateUrl, {
 				method: "POST",
 				headers: {
-					"Content-Type": "application/json"
+					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(course)
+				body: JSON.stringify(course),
 			})
-				.then(result => result.json())
-				.then(result => {
+				.then((result) => result.json())
+				.then((result) => {
 					if (!result.message.length) {
 						alert("Please try again! Course NOT found");
 					} else {
@@ -134,15 +141,17 @@ class CourseList extends Component {
 						fetch(updateUrl, {
 							method: "POST",
 							headers: {
-								"Content-Type": "application/json"
+								"Content-Type": "application/json",
 							},
-							body: JSON.stringify(updatedUser)
+							body: JSON.stringify(updatedUser),
 						})
-							.then(result => result.json())
-							.then(result => {
+							.then((result) => result.json())
+							.then((result) => {
 								this.props.handleUser(finalUser);
-								this.setState({ user: finalUser });
-								this.setState({ courses: currentCourses });
+								this.setState({
+									user: finalUser,
+									courses: currentCourses,
+								});
 							});
 					}
 				});
@@ -281,9 +290,10 @@ class CourseList extends Component {
 			</div>
 		);
 		if (!this.state.done) {
-			return <h5>Loading...</h5>;
+			return <h5>Loading kg...</h5>;
 		} else {
 			if (this.state.courses.length) {
+				let { url } = this.props.match;
 				const result = this.state.courses.map((course, index) => {
 					return <CourseCard key={index} course={course} />;
 				});
@@ -291,12 +301,12 @@ class CourseList extends Component {
 					<div className="container">
 						<Switch>
 							<Route
-								path="/course/:courseId"
-								render={props => (
+								path={`${url}/courses/:courseId`}
+								render={(props) => (
 									<Course {...props} user={this.state.user} />
 								)}
 							/>
-							<Route exact path="/">
+							<Route path="/courses">
 								<div>
 									{this.state.user.category === "prof"
 										? profForm
@@ -319,4 +329,4 @@ class CourseList extends Component {
 	}
 }
 
-export default CourseList;
+export default withRouter(CourseList);
