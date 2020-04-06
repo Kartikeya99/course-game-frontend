@@ -1,14 +1,12 @@
 import React, { Component } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import { useStoreActions } from "easy-peasy";
 
 class Login extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			email: null,
-			password: null,
+			email: "",
+			password: "",
 		};
 
 		this.handleChange = this.handleChange.bind(this);
@@ -17,7 +15,7 @@ class Login extends Component {
 
 	handleChange(event) {
 		const target = event.target;
-		const value = target.value;
+		const value = target.name === "check" ? target.checked : target.value;
 		const name = target.name;
 
 		this.setState({
@@ -28,7 +26,6 @@ class Login extends Component {
 	handleSubmit(event) {
 		event.preventDefault();
 
-		console.log("submit triggered");
 		const url = "http://localhost:1916/user/";
 		const challenge = {
 			password: this.state.password,
@@ -44,14 +41,17 @@ class Login extends Component {
 			.then((result) => result.json())
 			.then((result) => {
 				let user = result.message[0];
-				useStoreActions((action) => action.user.update)(user);
 
-				// Auth stuff
-				let history = useHistory();
-				let location = useLocation();
-
-				let { from } = location.state || { from: { pathname: "/" } };
-				history.replace(from);
+				if (user) {
+					if (this.state.check) {
+						localStorage.setItem("user", JSON.stringify(user));
+					}
+					this.props.handleUser(user);
+				} else {
+					alert(
+						"The username or password is not correct. Please try again!"
+					);
+				}
 			});
 	}
 
@@ -60,6 +60,7 @@ class Login extends Component {
 			<div className="container">
 				<div className="row">
 					<div className="col-md-4 offset-md-4">
+						<h3 className="text-center">Login</h3>
 						<form onSubmit={this.handleSubmit} id="form">
 							<div className="form-group">
 								<label
@@ -92,6 +93,22 @@ class Login extends Component {
 									value={this.state.password}
 									onChange={this.handleChange}
 								/>
+							</div>
+							<div className="form-check">
+								<input
+									className="form-check-input"
+									type="checkbox"
+									id="check"
+									value={this.state.checked}
+									onChange={this.handleChange}
+									name="check"
+								/>
+								<label
+									className="form-check-label"
+									htmlFor="check"
+								>
+									Keep Logged In
+								</label>
 							</div>
 							<button type="submit" className="btn btn-primary">
 								Login

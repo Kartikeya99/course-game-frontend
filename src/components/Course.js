@@ -6,7 +6,6 @@ import {
 	withRouter,
 	useRouteMatch,
 } from "react-router-dom";
-import { useStoreState } from "easy-peasy";
 
 // Used to render the card for challenges
 const ChallengeCard = (props) => {
@@ -29,7 +28,7 @@ const ChallengeCard = (props) => {
 };
 
 // TODO:
-const PlaceholderChallenge = (props) => {
+const Challenge = (props) => {
 	let challengeId = props.match.params.challengeId;
 	return <p>{challengeId}</p>;
 };
@@ -46,7 +45,7 @@ class Course extends Component {
 			challenges: [],
 			done: false,
 			name: "",
-			user: useStoreState((state) => state.userModel.user),
+			user: this.props.user,
 		};
 	}
 
@@ -87,14 +86,13 @@ class Course extends Component {
 	handleSubmit(event) {
 		event.preventDefault();
 
-		console.log("submit triggered");
 		let currentChallenges = this.state.challenges;
 		const url = "http://localhost:1916/challenge/create";
 		const challenge = {
 			courseId: this.state.course._id,
 			name: this.state.name,
 		};
-		console.log(challenge);
+
 		fetch(url, {
 			method: "POST",
 			headers: {
@@ -104,7 +102,6 @@ class Course extends Component {
 		})
 			.then((result) => result.json())
 			.then((result) => {
-				console.log(result);
 				let newChallenge = result.message;
 				currentChallenges.push(newChallenge);
 				this.setState({ challenges: currentChallenges });
@@ -130,6 +127,7 @@ class Course extends Component {
 		// Form to create a challenge. Only visible to prof
 		const form = (
 			<div id="form">
+				<br />
 				<button
 					type="button"
 					className="btn btn-success"
@@ -161,7 +159,6 @@ class Course extends Component {
 					</button>
 				</form>
 				<br />
-				<br />
 			</div>
 		);
 
@@ -182,7 +179,13 @@ class Course extends Component {
 						<Switch>
 							<Route
 								path={`${url}/challenge/:challengeId`}
-								component={PlaceholderChallenge}
+								render={(props) => (
+									<Challenge
+										{...props}
+										user={this.state.user}
+										handlerUser={this.props.handlerUser}
+									/>
+								)}
 							/>
 							<Route exact path={url}>
 								{this.state.user.category === "prof"
@@ -194,7 +197,12 @@ class Course extends Component {
 					</div>
 				);
 			} else {
-				return <h5>No challenges to show. Create new challanges.</h5>;
+				return (
+					<h5>
+						{this.state.user.category === "prof" ? form : ""}
+						No challenges to show. Create new challanges.
+					</h5>
+				);
 			}
 		}
 	}

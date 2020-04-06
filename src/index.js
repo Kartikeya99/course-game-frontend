@@ -1,18 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { StoreProvider } from "easy-peasy";
-import store from "./model";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
-ReactDOM.render(
-	<React.StrictMode>
-		<StoreProvider store={store}>
+const Root = () => {
+	return (
+		<React.StrictMode>
 			<App />
-		</StoreProvider>
-	</React.StrictMode>,
-	document.getElementById("root")
-);
+		</React.StrictMode>
+	);
+};
+
+ReactDOM.render(<Root />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -6,7 +6,6 @@ import {
 	withRouter,
 	useRouteMatch,
 } from "react-router-dom";
-import { useStoreState, useStoreActions } from "easy-peasy";
 import Course from "./Course";
 
 const CourseCard = (props) => {
@@ -34,7 +33,7 @@ class CourseList extends Component {
 		super(props);
 
 		this.state = {
-			user: useStoreState((state) => state.userModel.user),
+			user: this.props.user,
 			courses: [],
 			done: false,
 			name: "",
@@ -101,7 +100,6 @@ class CourseList extends Component {
 				code: this.state.code,
 				name: this.state.name,
 			};
-			console.log(course);
 			fetch(url, {
 				method: "POST",
 				headers: {
@@ -111,7 +109,6 @@ class CourseList extends Component {
 			})
 				.then((result) => result.json())
 				.then((result) => {
-					console.log(result);
 					let newCourse = result.message;
 					currentCourses.push(newCourse);
 					this.setState({ courses: currentCourses });
@@ -156,12 +153,10 @@ class CourseList extends Component {
 							.then((result) => result.json())
 							.then((result) => {
 								// Updating the state with the current user and courses.
-								useStoreActions(
-									(action) => action.userModel.update
-								)(finalUser);
 								this.setState({
 									courses: currentCourses,
 								});
+								this.props.handlerUser(finalUser);
 							});
 					}
 				});
@@ -312,9 +307,15 @@ class CourseList extends Component {
 						<Switch>
 							<Route
 								path={`${url}/courses/:courseId`}
-								render={(props) => <Course {...props} />}
+								render={(props) => (
+									<Course
+										{...props}
+										user={this.state.user}
+										handlerUser={this.props.handlerUser}
+									/>
+								)}
 							/>
-							<Route path="/courses">
+							<Route path="/">
 								<div>
 									{this.state.user.category === "prof"
 										? profForm
