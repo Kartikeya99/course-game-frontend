@@ -198,10 +198,16 @@ class Course extends Component {
 				);
 			} else {
 				return (
-					<h5>
-						{this.state.user.category === "prof" ? form : ""}
-						No challenges to show. Create new challanges.
-					</h5>
+					<div className="container">
+						<div className="row">
+							<h5>
+								{this.state.user.category === "prof"
+									? form
+									: ""}
+								No challenges to show. Create new challanges.
+							</h5>
+						</div>
+					</div>
 				);
 			}
 		}

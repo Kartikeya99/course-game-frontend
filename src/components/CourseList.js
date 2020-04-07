@@ -327,12 +327,18 @@ class CourseList extends Component {
 					</div>
 				);
 			} else {
-				if (this.state.user.category === "prof")
-					return (
-						<h5>No courses to show. Create some new courses.</h5>
-					);
-				if (this.state.user.category === "student")
-					return <h5>No courses found. Add some courses</h5>;
+				return (
+					<div className="container">
+						<div className="row">
+							<h5>
+								{this.state.user.category === "prof"
+									? profForm
+									: studForm}
+								No challenges to show.
+							</h5>
+						</div>
+					</div>
+				);
 			}
 		}
 	}
