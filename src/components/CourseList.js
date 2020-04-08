@@ -156,7 +156,7 @@ class CourseList extends Component {
 								this.setState({
 									courses: currentCourses,
 								});
-								this.props.handlerUser(finalUser);
+								this.props.handleUser(finalUser);
 							});
 					}
 				});
@@ -311,7 +311,7 @@ class CourseList extends Component {
 									<Course
 										{...props}
 										user={this.state.user}
-										handlerUser={this.props.handlerUser}
+										handleUser={this.props.handleUser}
 									/>
 								)}
 							/>

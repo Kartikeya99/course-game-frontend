@@ -183,7 +183,7 @@ class Course extends Component {
 									<Challenge
 										{...props}
 										user={this.state.user}
-										handlerUser={this.props.handlerUser}
+										handleUser={this.props.handleUser}
 									/>
 								)}
 							/>
