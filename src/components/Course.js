@@ -7,6 +7,8 @@ import {
 	useRouteMatch,
 } from "react-router-dom";
 
+import ChallengeProf from "./ChallengeProf";
+
 // Used to render the card for challenges
 const ChallengeCard = (props) => {
 	let { url } = useRouteMatch();
@@ -25,12 +27,6 @@ const ChallengeCard = (props) => {
 			</div>
 		</div>
 	);
-};
-
-// TODO:
-const Challenge = (props) => {
-	let challengeId = props.match.params.challengeId;
-	return <p>{challengeId}</p>;
 };
 
 class Course extends Component {
@@ -127,7 +123,6 @@ class Course extends Component {
 		// Form to create a challenge. Only visible to prof
 		const form = (
 			<div id="form">
-				<br />
 				<button
 					type="button"
 					className="btn btn-success"
@@ -159,11 +154,18 @@ class Course extends Component {
 					</button>
 				</form>
 				<br />
+				<br />
 			</div>
 		);
 
 		if (!this.state.done) {
-			return <p>Loading Course and challenges...</p>;
+			return (
+				<div className="spinner-border text-primary" role="status">
+					<span className="sr-only">
+						Loading course and challenges...
+					</span>
+				</div>
+			);
 		} else {
 			if (this.state.challenges.length) {
 				let { url } = this.props.match;
@@ -175,18 +177,31 @@ class Course extends Component {
 						<br />
 						<h3>{this.state.course.name}</h3>
 						<p>{this.state.course.description}</p>
-						<br />
 						<Switch>
-							<Route
-								path={`${url}/challenge/:challengeId`}
-								render={(props) => (
-									<Challenge
-										{...props}
-										user={this.state.user}
-										handleUser={this.props.handleUser}
-									/>
-								)}
-							/>
+							{this.state.user.category === "prof" && (
+								<Route
+									path={`${url}/challenge/:challengeId`}
+									render={(props) => (
+										<ChallengeProf
+											{...props}
+											user={this.state.user}
+											handleUser={this.props.handleUser}
+										/>
+									)}
+								/>
+							)}
+							{/* {this.state.user.category === "student" && (
+								<Route
+									path={`${url}/challenge/:challengeId`}
+									render={(props) => (
+										<ChallengeStudent
+											{...props}
+											user={this.state.user}
+											handleUser={this.props.handleUser}
+										/>
+									)}
+								/>
+							)} */}
 							<Route exact path={url}>
 								{this.state.user.category === "prof"
 									? form
@@ -199,6 +214,9 @@ class Course extends Component {
 			} else {
 				return (
 					<div className="container">
+						<br />
+						<h3>{this.state.course.name}</h3>
+						<p>{this.state.course.description}</p>
 						<div className="row">
 							<h5>
 								{this.state.user.category === "prof"

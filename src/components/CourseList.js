@@ -295,7 +295,11 @@ class CourseList extends Component {
 			</div>
 		);
 		if (!this.state.done) {
-			return <h5>Loading...</h5>;
+			return (
+				<div className="spinner-border text-primary" role="status">
+					<span className="sr-only">Loading...</span>
+				</div>
+			);
 		} else {
 			if (this.state.courses.length) {
 				let { url } = this.props.match;

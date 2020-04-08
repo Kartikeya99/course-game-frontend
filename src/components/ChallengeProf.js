@@ -3,12 +3,37 @@ import { withRouter } from "react-router-dom";
 import Question from "./QuestionClass";
 
 const QuestionCard = (props) => {
-	return <p>Hi</p>;
+	return (
+		<div className="col-sm-12" style={{ marginBottom: "2em" }}>
+			<div className="card">
+				<div className="card-body">
+					<h5 className="card-title">{props.question.question}</h5>
+					<p className="card-text">Answer: {props.question.answer}</p>
+					<p className="card-text">
+						Option: 1{props.question.option1}
+					</p>
+					<p className="card-text">
+						Option: 2{props.question.option2}
+					</p>
+					<p className="card-text">
+						Option: 3{props.question.option3}
+					</p>
+					<p className="card-text">
+						Option: 4{props.question.option4}
+					</p>
+				</div>
+			</div>
+		</div>
+	);
 };
 
-class ChallengeForProf extends Component {
+class ChallengeProf extends Component {
 	constructor(props) {
 		super(props);
+
+		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmitForm = this.handleSubmitForm.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 
 		this.state = {
 			question: "",
@@ -23,6 +48,7 @@ class ChallengeForProf extends Component {
 			done: false,
 			// date when to publish this challenge
 			date: "",
+			updated: false,
 		};
 	}
 
@@ -35,8 +61,25 @@ class ChallengeForProf extends Component {
 			.then((result) => {
 				this.setState({
 					challenge: result.message[0],
-					done: true,
 				});
+			})
+			.then((urlForQuestions) => {
+				fetch(
+					`http://localhost:1916/question?challengeId=${challengeId}`
+				)
+					.then((result) => result.json())
+					.then((result) => {
+						let updated;
+						result.message.length !== 0
+							? (updated = true)
+							: (updated = false);
+
+						this.setState({
+							questionList: result.message,
+							done: true,
+							updated,
+						});
+					});
 			});
 	}
 
@@ -53,7 +96,10 @@ class ChallengeForProf extends Component {
 	handleSubmit(event) {
 		event.preventDefault();
 
-		const url = "http://localhost:1916/question/create";
+		let url = "";
+		this.state.updated
+			? (url = "http://localhost:1916/question/update")
+			: (url = "http://localhost:1916/question/create");
 		const questionsObject = {
 			questionList: this.state.questionList,
 		};
@@ -68,10 +114,9 @@ class ChallengeForProf extends Component {
 			.then((result) => result.json())
 			.then((result) => {
 				let status = result.status;
-				if (status === "200 OK") alert("Questions successfully added");
+				if (status === "200 OK")
+					alert("Questions successfully added to challenge.");
 			});
-
-		this.questionCreate();
 	}
 
 	handleSubmitForm(event) {
@@ -91,7 +136,17 @@ class ChallengeForProf extends Component {
 		);
 
 		currentQuestions.push(question);
-		this.setState({ questionList: currentQuestions });
+		this.setState({
+			questionList: currentQuestions,
+			question: "",
+			option1: "",
+			option2: "",
+			option3: "",
+			option4: "",
+			answer: "",
+		});
+
+		this.questionCreate();
 	}
 
 	questionCreate() {
@@ -108,9 +163,6 @@ class ChallengeForProf extends Component {
 	}
 
 	render() {
-		let result = this.state.questions.map((question, index) => {
-			return <QuestionCard question={question} key={index} />;
-		});
 		const form = (
 			<div id="form">
 				<br />
@@ -210,25 +262,63 @@ class ChallengeForProf extends Component {
 					</button>
 				</form>
 				<br />
+				<br />
 			</div>
 		);
-		if (!this.state.done) {
-			return <p>Loading Challenge...</p>;
-		} else {
-			return (
-				<div className="container">
-					<div className="row">
-						<br />
-						<h3>{this.state.challenge.name}</h3>
-						<br />
-						{form}
-						<br />
-						{result}
+		if (this.state.done) {
+			if (this.state.questionList.length) {
+				let result = this.state.questionList.map((question, index) => {
+					return <QuestionCard question={question} key={index} />;
+				});
+				return (
+					<div className="container">
+						<div className="row">
+							<br />
+							<h3>{this.state.challenge.name}</h3>
+						</div>
+						<div className="row">
+							<br />
+							{form}
+							<br />
+						</div>
+						<div className="row">
+							<br />
+							{result}
+							<br />
+						</div>
+						<div className="row">
+							<br />
+							<button
+								type="button"
+								className="btn btn-success"
+								id="submitButton"
+								onClick={this.handleSubmit}
+							>
+								Submit Questions.
+							</button>
+							<br />
+						</div>
 					</div>
-				</div>
-			);
+				);
+			} else {
+				return (
+					<div className="container">
+						<div className="row">
+							<br />
+							<h3>{this.state.challenge.name}</h3>
+						</div>
+						<div className="row">
+							<br />
+							{form}
+							<br />
+						</div>
+					</div>
+				);
+			}
+		} else {
+			return <h5>Loading...</h5>;
 		}
 	}
 }
 
-export default withRouter(ChallengeForProf);
+export default withRouter(ChallengeProf);
