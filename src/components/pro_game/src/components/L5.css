@@ -1,0 +1,98 @@
+#l5main{
+    background-image: url(./images/l5-bk.jpg);
+    width: 100%;
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: bottom;
+}
+#l5bat {
+    white-space:nowrap;
+    text-align: center;
+    padding-top: 60px;
+}
+.l5d{
+    display:inline-block;
+    white-space:normal;
+}
+.l5d h2{
+    margin: 0;
+    padding: 0;
+    color:white;
+}
+#l5dev {
+    white-space:nowrap;
+    text-align: center;
+}
+#l5dev div {
+    position: relative;
+    display:inline-block;
+    white-space:normal;
+    border: 2px solid black;
+}
+#l5dev div h3{
+    width: 60px;
+    margin: 0;
+    padding: 10px;
+}
+#l5va{
+    margin-top: 70px;
+    white-space:nowrap;
+    text-align: center;
+}
+#l5va div{
+    display:inline-block;
+    white-space:normal;
+    width: 171px;
+    height: 147px;
+    background-color: rgb(235, 227, 227);
+    border: 20px solid rgb(184, 182, 182);
+}
+#l5b1{
+    float:left;
+    margin: 10px 10px;
+    text-decoration: none;
+    border: 2px solid black;
+    padding: 2px;
+    background-color: cyan;
+    color: black;
+}
+#l5b2{
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+#l5b2b{
+    margin: 10px 10px;
+    text-decoration: none;
+    border: 2px solid black;
+    padding: 2px;
+    background-color: cyan;
+    color: black;
+}
+#l5b2m{
+    color: yellow;
+}
+#l5inf{
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+    background-color: white;
+}
+#l5b3{
+    float: right;
+    margin: 1%;
+}
+#l5b4{
+    float:right;
+    margin: 10px 10px;
+    font-size: 12pt;
+    text-decoration: none;
+    border: 2px solid black;
+    padding: 2px;
+    background-color: cyan;
+    color: black;
+}
