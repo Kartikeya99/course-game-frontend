@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 
 import Login from "./components/Login";
-import Navbar from "./components/Navbar";
 import CourseList from "./components/CourseList";
 
 class App extends Component {
@@ -15,7 +14,9 @@ class App extends Component {
 
 	handleUser(user) {
 		this.setState({ user });
+		localStorage.setItem("user",JSON.stringify(user));
 		this.forceUpdate();
+		window.location.reload(false);
 	}
 
 	render() {
@@ -24,7 +25,6 @@ class App extends Component {
 		} else {
 			return (
 				<Router>
-					<Navbar handleUser={this.handleUser} />
 					<Switch>
 						<Route path="/">
 							<CourseList
