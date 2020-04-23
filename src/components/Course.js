@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import ChallengeProf from "./ChallengeProf";
+import Navbar from "./Navbar";
 
 // Used to render the card for challenges
 const ChallengeCard = (props) => {
@@ -18,7 +19,7 @@ const ChallengeCard = (props) => {
 				<div className="card-body">
 					<h5 className="card-title">{props.challenge.name}</h5>
 					<Link
-						to={`${url}/challenge/${props.challenge._id}`}
+						to={`${url}/challenge/${props.challenge.name}`}
 						className="btn btn-primary"
 					>
 						Go to Challenge
@@ -169,21 +170,20 @@ class Course extends Component {
 		} else {
 			if (this.state.challenges.length) {
 				let { url } = this.props.match;
+				var cid = url.substring(url.lastIndexOf('/')+1);
 				const result = this.state.challenges.map((challenge, index) => {
 					return <ChallengeCard key={index} challenge={challenge} />;
 				});
 				return (
-					<div className="container">
-						<br />
-						<h3>{this.state.course.name}</h3>
-						<p>{this.state.course.description}</p>
+					<div>
 						<Switch>
-							{this.state.user.category === "prof" && (
+							{(
 								<Route
-									path={`${url}/challenge/:challengeId`}
+									path={`${url}/challenge/:challengeName`}
 									render={(props) => (
 										<ChallengeProf
 											{...props}
+											cid={cid}
 											user={this.state.user}
 											handleUser={this.props.handleUser}
 										/>
@@ -203,27 +203,35 @@ class Course extends Component {
 								/>
 							)} */}
 							<Route exact path={url}>
-								{this.state.user.category === "prof"
-									? form
-									: ""}
-								<div className="row">{result}</div>
+								<Navbar handleUser={this.props.handleUser} />
+								<div className="container">
+									<h3>{this.state.course.name}</h3>
+									<p>{this.state.course.description}</p>
+									{this.state.user.category === "prof"
+										? form
+										: ""}
+									<div className="row">{result}</div>
+								</div>
 							</Route>
 						</Switch>
 					</div>
 				);
 			} else {
 				return (
-					<div className="container">
-						<br />
-						<h3>{this.state.course.name}</h3>
-						<p>{this.state.course.description}</p>
-						<div className="row">
-							<h5>
-								{this.state.user.category === "prof"
-									? form
-									: ""}
-								No challenges to show. Create new challanges.
-							</h5>
+					<div>
+						<Navbar handleUser={this.props.handleUser} />
+						<div className="container">
+							<br />
+							<h3>{this.state.course.name}</h3>
+							<p>{this.state.course.description}</p>
+							<div className="row">
+								<h5>
+									{this.state.user.category === "prof"
+										? form
+										: ""}
+									No challenges to show. Create new challanges.
+								</h5>
+							</div>
 						</div>
 					</div>
 				);

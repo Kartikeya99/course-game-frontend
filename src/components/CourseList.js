@@ -7,6 +7,7 @@ import {
 	useRouteMatch,
 } from "react-router-dom";
 import Course from "./Course";
+import Navbar from "./Navbar";
 
 const CourseCard = (props) => {
 	let { url } = useRouteMatch();
@@ -307,7 +308,7 @@ class CourseList extends Component {
 					return <CourseCard key={index} course={course} />;
 				});
 				return (
-					<div className="container">
+					<div>
 						<Switch>
 							<Route
 								path={`${url}/courses/:courseId`}
@@ -321,10 +322,13 @@ class CourseList extends Component {
 							/>
 							<Route path="/">
 								<div>
-									{this.state.user.category === "prof"
-										? profForm
-										: studForm}
-									<div className="row">{result}</div>
+									<Navbar handleUser={this.props.handleUser} />
+									<div className="container">
+										{this.state.user.category === "prof"
+											? profForm
+											: studForm}
+										<div className="row">{result}</div>
+									</div>
 								</div>
 							</Route>
 						</Switch>
@@ -332,14 +336,17 @@ class CourseList extends Component {
 				);
 			} else {
 				return (
-					<div className="container">
-						<div className="row">
-							<h5>
-								{this.state.user.category === "prof"
-									? profForm
-									: studForm}
-								No challenges to show.
-							</h5>
+					<div>
+						<Navbar handleUser={this.props.handleUser} />
+						<div className="container">
+							<div className="row">
+								<h5>
+									{this.state.user.category === "prof"
+										? profForm
+										: studForm}
+									No challenges to show.
+								</h5>
+							</div>
 						</div>
 					</div>
 				);
