@@ -20,7 +20,7 @@ class App extends Component {
 	}
 
 	render() {
-		if (!this.state.user) {
+		if (this.state.user===null || this.state.user==="null") {
 			return <Login handleUser={this.handleUser} />;
 		} else {
 			return (

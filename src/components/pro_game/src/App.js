@@ -22,7 +22,7 @@ class App extends Component {
 					f=ac[i].marksScored;
 				}
 			}
-			if(f===-10){
+			if(f===-1){
 				var updatedUser=props.user;
 				updatedUser.attemptedChallenges.push({
 					courseId:props.cid,
@@ -47,6 +47,11 @@ class App extends Component {
 			}
 			this.state={
 				le:f
+			}
+		}
+		else{
+			this.state={
+				le:1
 			}
 		}
 	}

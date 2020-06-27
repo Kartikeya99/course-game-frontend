@@ -17,6 +17,27 @@ class L1 extends Component {
 		}
 		this.onClick=this.onClick.bind(this);
 		this.chl=this.chl.bind(this);
+		const userAt={
+			userId :props.user._id,
+			userName :props.user.name,
+			marksObtained : "0"
+		};
+		var url=props.match.url;
+		var temp = url.split('/');
+		temp = temp[temp.length-2];
+		temp = temp.split('-');
+		fetch(`http://localhost:1916/challenge/addAttempt?challengeId=${temp[0]}`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(userAt),
+		})
+			.then((result) => result.json())
+			.then((result) => {
+				console.log(result);
+				// Updating the state with the current user and courses.
+			});
 	}
 	chl(le){
 		var ac=this.props.user.attemptedChallenges;
@@ -31,6 +52,7 @@ class L1 extends Component {
 		}
 		var updatedUser=this.props.user;
 		updatedUser.attemptedChallenges=ac;
+		this.props.handleUser(updatedUser);
 		const updateUrl = "http://localhost:1916/user/update";
 					// Updating the enrolledIn
 		fetch(updateUrl, {
@@ -43,7 +65,6 @@ class L1 extends Component {
 			.then((result) => result.json())
 			.then((result) => {
 				// Updating the state with the current user and courses.
-				this.props.handleUser(updatedUser);
 			});
 	}
 	onClick(f,e){
@@ -82,6 +103,27 @@ class L1 extends Component {
 				nt:'/l2'
 			});
 			this.setState({dl:2});
+			const userAt={
+				userId :this.props.user._id,
+				userName :this.props.user.name,
+				marksObtained : "1"
+			};
+			var url=this.props.match.url;
+			var temp = url.split('/');
+			temp = temp[temp.length-2];
+			temp = temp.split('-');
+			fetch(`http://localhost:1916/challenge/addAttempt?challengeId=${temp[0]}`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(userAt),
+			})
+				.then((result) => result.json())
+				.then((result) => {
+					console.log(result);
+					// Updating the state with the current user and courses.
+				});
 		}
 		else{
 			this.setState({

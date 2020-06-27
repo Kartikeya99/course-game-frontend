@@ -3,6 +3,7 @@ import './Info.css';
 import {Link} from  'react-router-dom';
 class Info extends Component {
 	render() {
+		console.log(this.props);
 		var url=this.props.match.url;
 		var le;
 		var msg;

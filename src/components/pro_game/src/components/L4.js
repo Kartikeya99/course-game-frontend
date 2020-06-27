@@ -171,6 +171,27 @@ class L4 extends Component {
                         msg: 'Move to next Level'
                     })
                     this.setState({dl:5});
+                    const userAt={
+                        userId :this.props.user._id,
+                        userName :this.props.user.name,
+                        marksObtained : "4"
+                    };
+                    var url=this.props.match.url;
+                    var temp = url.split('/');
+                    temp = temp[temp.length-2];
+                    temp = temp.split('-');
+                    fetch(`http://localhost:1916/challenge/addAttempt?challengeId=${temp[0]}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(userAt),
+                    })
+                        .then((result) => result.json())
+                        .then((result) => {
+                            console.log(result);
+                            // Updating the state with the current user and courses.
+                        });
                 }
                 else{
                     v=document.getElementById('l4poph1');

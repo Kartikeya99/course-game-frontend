@@ -10,7 +10,8 @@ class ChallengeProf extends Component {
 	}
 	componentDidMount(){
 		var url=this.props.match.url;
-		var filename = url.substring(url.lastIndexOf('/')+1);
+		var temp = url.substring(url.lastIndexOf('/')+1);
+		var filename=temp.substring(temp.lastIndexOf('-')+1);
 		const co=require('./'+filename+'/src/App').default;
 		this.setState({co:co});
 		//this.setState({co:co});
@@ -18,7 +19,8 @@ class ChallengeProf extends Component {
 	render() {
 		const Co=this.state.co;
 		var {url}=this.props.match;
-		var chid = url.substring(url.lastIndexOf('/')+1);
+		var temp = url.substring(url.lastIndexOf('/')+1);
+		var chid=temp.substring(temp.lastIndexOf('-')+1);
 		return(
 			<div>
 				{this.state.co?

@@ -6,24 +6,65 @@ import {
 	withRouter,
 	useRouteMatch,
 } from "react-router-dom";
-
+import './Co.css'
 import ChallengeProf from "./ChallengeProf";
 import Navbar from "./Navbar";
 
 // Used to render the card for challenges
 const ChallengeCard = (props) => {
 	let { url } = useRouteMatch();
+	//let c=props.lB;
+	let c=props.lB;
+	if(c===undefined){
+		c=[];
+	}
 	return (
 		<div className="col-sm-4" style={{ marginBottom: "2em" }}>
 			<div className="card">
 				<div className="card-body">
 					<h5 className="card-title">{props.challenge.name}</h5>
 					<Link
-						to={`${url}/challenge/${props.challenge.name}`}
+						to={`${url}/challenge/${props.challenge._id}-${props.challenge.name}`}
 						className="btn btn-primary"
 					>
 						Go to Challenge
 					</Link>
+					<button type="button" style={{ margin: "10px" }} className="btn btn-primary" data-toggle="modal" data-target="#myModal">See Leadeaboard</button>
+					<div id="myModal" className="modal fade" role="dialog">
+						<div className="modal-dialog">
+							<div className="modal-content">
+							<div className="modal-header">
+								<h4 className="modal-title">Leadeaboard of {props.challenge.name}</h4>
+								<button type="button" className="close" data-dismiss="modal">&times;</button>
+							</div>
+							<div className="modal-body">
+							<table id='students'>
+               					<tbody>
+									<tr>
+										<th>Rank</th>
+										<th>Name</th>
+										<th>Score</th>
+									</tr>
+								    {c.map((c, index) => {
+										const { userName,marksObtained} = c //destructuring
+										return (
+											<tr key={index}>
+											<td>{index+1}</td>
+											<td>{userName}</td>
+											<td>{marksObtained}</td>
+											</tr>
+										)
+									})}
+               					</tbody>
+            				</table>
+							
+							</div>
+							<div className="modal-footer">
+								<button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+							</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -43,6 +84,7 @@ class Course extends Component {
 			done: false,
 			name: "",
 			user: this.props.user,
+			lB:[]
 		};
 	}
 
@@ -66,6 +108,20 @@ class Course extends Component {
 							challenges: result.message,
 							done: true,
 						});
+						for(var i=0;i<this.state.challenges.length;i++){
+							var e=this.state.challenges[i];
+							fetch(`http://localhost:1916/challenge/getLeaderBoard?challengeId=${e._id}`, {
+								method: "GET",
+							})
+								.then((result) => result.json())
+								.then((result) => {
+									let v=this.state.lB;
+									v.push(result.message);
+									this.setState({lB:v});
+									console.log(result.message)
+									// Updating the state with the current user and courses.
+								});
+						}
 					});
 			});
 	}
@@ -172,7 +228,7 @@ class Course extends Component {
 				let { url } = this.props.match;
 				var cid = url.substring(url.lastIndexOf('/')+1);
 				const result = this.state.challenges.map((challenge, index) => {
-					return <ChallengeCard key={index} challenge={challenge} />;
+					return <ChallengeCard key={index} lB={this.state.lB[index]} challenge={challenge} />;
 				});
 				return (
 					<div>
