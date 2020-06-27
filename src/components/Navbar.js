@@ -10,7 +10,7 @@ class Navbar extends Component {
 
 	changeUser() {
 		localStorage.clear();
-		this.props.handleUser(undefined);
+		this.props.handleUser(null);
 	}
 
 	render() {

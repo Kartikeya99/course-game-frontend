@@ -1,0 +1,65 @@
+#l2main{
+    width: 100%;
+    height: 100vh;
+    background-image: url(./images/l2-bk.jpeg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+#l2ball{
+    transition: transform .5s  ease-in-out;
+    opacity: 100%;
+}
+#l2tp{
+    height:75%;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+#l2but{
+    text-align: center;
+}
+#l2bt{
+    text-align: center;
+    height: 25%;
+}
+#l2tar1{
+    float: left;
+    margin-left: 5%;
+    padding: 0;
+}
+#l2tar2{
+    padding: 0;
+}
+#l2tar3{
+    float: right;
+    margin-right: 5%;
+    padding: 0;
+}
+#l2code{
+    width: 50%;
+    margin-left: 25%;
+    padding: 1%;
+    background-color: white;
+}
+#l2b1{
+    text-decoration: none;
+    border: 2px solid black;
+    padding: 2px;
+    background-color: cyan;
+    color: black;
+    float: left;
+    margin: 2%;
+}
+#l2b2{
+    text-decoration: none;
+    border: 2px solid black;
+    padding: 2px;
+    background-color: cyan;
+    color: black;
+    margin: 2%;
+}
+#l2b2d{
+    text-align: center;
+    margin-top: 2%;
+}
