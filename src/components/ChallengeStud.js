@@ -27,7 +27,7 @@ const QuestionCard = (props) => {
 	);
 };
 
-class ChallengeProf extends Component {
+class ChallengeStud extends Component {
 	constructor(props) {
 		super(props);
 
@@ -117,6 +117,8 @@ class ChallengeProf extends Component {
 				if (status === "200 OK")
 					alert("Questions successfully added to challenge.");
 			});
+
+		this.questionCreate();
 	}
 
 	handleSubmitForm(event) {
@@ -325,4 +327,4 @@ class ChallengeProf extends Component {
 	}
 }
 
-export default withRouter(ChallengeProf);
+export default withRouter(ChallengeStud);

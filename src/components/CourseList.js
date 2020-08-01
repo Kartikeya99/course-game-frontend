@@ -338,7 +338,7 @@ class CourseList extends Component {
 								{this.state.user.category === "prof"
 									? profForm
 									: studForm}
-								No challenges to show.
+								No courses to show.
 							</h5>
 						</div>
 					</div>
